@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from openai import OpenAI
-import os
 from dotenv import load_dotenv
-load_dotenv()
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
+from llama_index.llms.openai import OpenAI
 
+load_dotenv()
 
 app = FastAPI()
 
@@ -26,19 +26,19 @@ def read_item(item_id: int, q: str = None):
 @app.post("/openai")
 def get_openai_response(message: Message):
     try:
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        print(message.user_message)
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {
-                    "role": "user",
-                    "content": message.user_message
-                }
-            ]
-        )
-        print(completion.choices[0].message)
-        return {"response": completion.choices[0].message}
+        client = OpenAI(model='gpt-4o-mini')
+
+        documents = SimpleDirectoryReader("data").load_data()
+
+        index = VectorStoreIndex.from_documents(documents)
+        chat_engine = index.as_chat_engine(
+            chat_mode="context",
+            system_prompt=(
+                "You are a curricular bot that answers questions about Rafael Molina."
+                " A good backend developer from Venezuela."
+            ), llm=client)
+        response = chat_engine.chat(message.user_message)
+
+        return {"response": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
