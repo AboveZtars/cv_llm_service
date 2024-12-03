@@ -20,7 +20,8 @@ def read_root():
 @app.post("/openai")
 def get_openai_response(message: Message):
     try:
-        response = chat_engine.chat(message.user_message)
+        response = chat_engine.chat(
+            "Da tu respuesta a mi mensaje enfocado en el Backend. Mensaje:" + message.user_message)
         return {"response": response.response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
