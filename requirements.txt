@@ -1,4 +1,16 @@
+# Core dependencies
 fastapi
 uvicorn
 python-dotenv
+gunicorn
+
+# LLM and Vector Store
 openai
+pinecone-client
+pinecone
+llama-index-core
+llama-index-llms-openai
+llama-index-vector-stores-pinecone
+
+# Utilities
+pydantic
