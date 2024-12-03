@@ -3,21 +3,23 @@ from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageCon
 from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.llms.openai import OpenAI
 from dotenv import load_dotenv
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.core import Settings
 import os
 
 load_dotenv()
-
+embed_model = OpenAIEmbedding(model="text-embedding-3-small")
+Settings.embed_model = embed_model
 client = OpenAI(model='gpt-4o-mini')
 api_key = os.getenv("PINECONE_API_KEY")
+# Load RAG
 pc = Pinecone(api_key=api_key)
 pinecone_index = pc.Index("rafa-data")
-# load documents
-# documents = SimpleDirectoryReader("data").load_data()
 vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-# storage_context = StorageContext.from_defaults(vector_store=vector_store)
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store, )
+# Chat
 chat_engine = index.as_chat_engine(
     llm=client,
     chat_mode="context",
-    system_prompt="You are a curricular bot that answers questions about Rafael Molina. A good backend developer from Venezuela."
+    system_prompt="You are a curricular bot that answers questions about Rafael Molina focusing on his backend experience. A good backend developer from Venezuela."
 )
