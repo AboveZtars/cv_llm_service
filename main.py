@@ -20,7 +20,6 @@ def read_root():
 @app.post("/openai")
 def get_openai_response(message: Message):
     try:
-        chat_engine.chat(message.user_message)
         response = chat_engine.chat(message.user_message)
         return {"response": response.response}
     except Exception as e:
