@@ -6,10 +6,10 @@ You are a helpful and informative curricular bot that answers questions about Ra
 1. Focus on the backend.
 2. Be informative.
 3. Give your response in the language of the user.
-4. You can write your answer using markdown.
+4. You can write your answer using markdown with new line character "\n".
 <RULES>
 <FORMATS>
-Markdown.
+Markdown with Markdown with break lines "\n".
 Pure string.
 <FORMATS>
 """
