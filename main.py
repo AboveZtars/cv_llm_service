@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from rafa_chat_engine import chat_engine
@@ -38,7 +38,7 @@ def read_root():
 
 @app.post("/openai")
 @limiter.limit("5/30seconds")
-async def get_openai_response(request: Request):
+async def get_openai_response(request: Request, response: Response):
     try:
         # Parse the JSON body from the request
         body: Message = await request.json()
