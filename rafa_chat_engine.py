@@ -11,7 +11,7 @@ import os
 load_dotenv()
 embed_model = OpenAIEmbedding(model="text-embedding-3-small")
 Settings.embed_model = embed_model
-client = OpenAI(model='gpt-4o-mini', max_tokens=100, temperature=0.3)
+client = OpenAI(model='gpt-4o-mini', max_tokens=150, temperature=0.3)
 api_key = os.getenv("PINECONE_API_KEY")
 # Load RAG
 pc = Pinecone(api_key=api_key)

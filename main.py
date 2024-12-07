@@ -33,6 +33,9 @@ def get_openai_response(message: Message):
     try:
         response = chat_engine.chat(
             context_input_prompt + message.user_message)
+
+        # Log the response
+        print(f"Response: {response.response}")
         return {"response": response.response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
