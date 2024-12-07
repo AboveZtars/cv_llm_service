@@ -38,18 +38,14 @@ def read_root():
 
 @app.post("/openai")
 @limiter.limit("5/30seconds")
-async def get_openai_response(request: Request, response: Response):
+async def get_openai_response(request: Request, response: Response, message: Message):
     try:
-        # Parse the JSON body from the request
-        body: Message = await request.json()
-        user_message = body.user_message
-
-        if not user_message:
+        if not message.user_message:
             raise HTTPException(
                 status_code=400, detail="user_message is required")
 
         response = chat_engine.chat(
-            context_input_prompt + user_message)
+            context_input_prompt + message.user_message)
 
         # Log the response
         print(f"Response: {response.response}")
