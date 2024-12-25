@@ -1,11 +1,17 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from rafa_chat_engine import chat_engine
 from fastapi.middleware.cors import CORSMiddleware
+from prompts import context_input_prompt
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
 
 load_dotenv()
 
+limiter = Limiter(key_func=get_remote_address,  default_limits=["1/minute"])
 app = FastAPI()
 
 # Add CORS middleware
@@ -16,6 +22,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 class Message(BaseModel):
@@ -33,10 +42,18 @@ def get_status():
 
 
 @app.post("/openai")
-def get_openai_response(message: Message):
+@limiter.limit("5/30seconds")
+async def get_openai_response(request: Request, response: Response, message: Message):
     try:
+        if not message.user_message:
+            raise HTTPException(
+                status_code=400, detail="user_message is required")
+
         response = chat_engine.chat(
-            "Da tu respuesta a mi mensaje enfocado en el Backend. Mensaje:" + message.user_message)
+            context_input_prompt + message.user_message)
+
+        # Log the response
+        print(f"Response: {response.response}")
         return {"response": response.response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
