@@ -27,6 +27,11 @@ def read_root():
     return {"Hello": "World"}
 
 
+@app.get("/status")
+def get_status():
+    return {"status": "Everything is working fine"}
+
+
 @app.post("/openai")
 def get_openai_response(message: Message):
     try:
