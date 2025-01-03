@@ -36,6 +36,11 @@ def read_root():
     return {"Hello": "World"}
 
 
+@app.get("/status")
+def get_status():
+    return {"status": "Everything is working fine"}
+
+
 @app.post("/openai")
 @limiter.limit("5/30seconds")
 async def get_openai_response(request: Request, response: Response, message: Message):
