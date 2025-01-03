@@ -49,5 +49,6 @@ dmypy.json
 # Pyre
 .pyre/
 
-# VS Code
+# Ide
 .vscode/
+.cursorrules
